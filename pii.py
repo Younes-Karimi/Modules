@@ -75,7 +75,7 @@ def extract_ssns(text, verbose=None):
     return ssns
 
 def has_ssn_kws(text):
-    for kw in ['ssn', 'social security', 'sn', 'social number']:
+    for kw in ['ssn', 'social security', 'ss', 'social number', 'sn']:
         if text.lower().find(kw) > -1:
             return True
     return False
