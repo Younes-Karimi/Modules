@@ -103,6 +103,11 @@ def extract_ips(text):
             try:
                 if int(part) > 255:
                     ips.remove(ip)
+                    # replace the first instance of an invalid IP with void for 
+                    # cases where there are multiple instances of an invalid IP 
+                    # exist in a piece of text and the 'find' funtion only finds 
+                    # the first instance.
+                    text = text.replace(ip, ' ')
                     invalid = True
                     break
             except:
@@ -115,6 +120,7 @@ def extract_ips(text):
             or (ip.find('8.8.8.8') == 0) \
             or (ip.find('0.0.0.0') == 0):
             ips.remove(ip)
+            text = text.replace(ip, ' ')
             continue
         # remove IP-like digits that are part of a longer string of digits
         prev_indx = text.find(ip) - 1
@@ -123,21 +129,25 @@ def extract_ips(text):
             # remove IP-like digits that are part of a URL
             if text[prev_indx].isdigit() or text[prev_indx] == '/':
                 ips.remove(ip)
+                text = text.replace(ip, ' ')
                 continue
         if prev_indx > 0:
             # remove IP-like digits that are part of a longer struct
             if text[prev_indx - 1].isdigit() and text[prev_indx] == '.':
                 ips.remove(ip)
+                text = text.replace(ip, ' ')
                 continue
         if next_indx < len(text):
             # remove IP-like digits that are part of a URL
             if text[next_indx].isdigit() or text[next_indx] == '/':
                 ips.remove(ip)
+                text = text.replace(ip, ' ')
                 continue
         if next_indx < len(text) - 1:
             # remove IP-like digits that are part of a longer struct
             if text[next_indx].isdigit() and text[next_indx] == '.':
                 ips.remove(ip)
+                text = text.replace(ip, ' ')
                 continue
     return ips
 
