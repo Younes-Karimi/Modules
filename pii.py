@@ -118,20 +118,21 @@ def extract_ips(text):
         if (ip.find('192.168') == 0) \
             or (ip.find('127.0.0') == 0) \
             or (ip.find('8.8.8.8') == 0) \
-            or (ip.find('0.0.0.0') == 0):
+            or (ip.find('0.0.0.0') == 0) \
+            or (ip.find('255.255.255') == 0):
             ips.remove(ip)
             text = text.replace(ip, ' ')
             continue
         # remove IP-like digits that are part of a longer string of digits
         prev_indx = text.find(ip) - 1
-        next_indx = text.find(ip) + 10
+        next_indx = text.find(ip) + len(ip)
         if prev_indx >= 0:
             # remove IP-like digits that are part of a URL
             if text[prev_indx].isdigit() or text[prev_indx] == '/':
                 ips.remove(ip)
                 text = text.replace(ip, ' ')
                 continue
-        if prev_indx > 0:
+        if prev_indx - 1 >= 0:
             # remove IP-like digits that are part of a longer struct
             if text[prev_indx - 1].isdigit() and text[prev_indx] == '.':
                 ips.remove(ip)
@@ -143,9 +144,9 @@ def extract_ips(text):
                 ips.remove(ip)
                 text = text.replace(ip, ' ')
                 continue
-        if next_indx < len(text) - 1:
+        if next_indx + 1 < len(text):
             # remove IP-like digits that are part of a longer struct
-            if text[next_indx].isdigit() and text[next_indx] == '.':
+            if text[next_indx + 1].isdigit() and text[next_indx] == '.':
                 ips.remove(ip)
                 text = text.replace(ip, ' ')
                 continue
