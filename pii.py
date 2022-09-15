@@ -40,9 +40,13 @@ def extract_ssns(text, verbose=None):
         '420-69-1738',
         '696-96-9696'
     ]
-    ssns = []
-    ssns.extend(re.findall(r'((?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4})', text))
+    ssns = re.findall(r'((?!000|666)[0-8][0-9]{2}-(?!00)[0-9]{2}-(?!0000)[0-9]{4})', text)
     for ssn in ssns:
+        # remove SSN-like digits that may belong to a URL or another number
+        if text.find('-' + ssn) > -1 or text.find(ssn + '-') > -1:
+            ssns.remove(ssn)
+            continue
+        # remove SSNs that are listed as invalid-looking
         if ssn in invalid_looking_ssns:
             ssns.remove(ssn)
             if verbose:
@@ -51,8 +55,9 @@ def extract_ssns(text, verbose=None):
                 elif ssn.find('420-69-') == 0:
                     print('>>> Unknown SSN that starts with 420-69:  ', ssn)
             continue
-        prev_indx = text.find(ssn)-1
-        next_indx = text.find(ssn)+11
+        # remove SSN-like digits that are part of a longer string of digits
+        prev_indx = text.find(ssn) - 1
+        next_indx = text.find(ssn) + 11
         if prev_indx >= 0:
             if text[prev_indx].isdigit():
                 ssns.remove(ssn)
@@ -81,32 +86,59 @@ def has_ssn(text):
     return has_ssn_kws(text)
 
 def extract_ips(text):
-    ips = []
-    unfiltered_ips = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', text)
-    for ip in unfiltered_ips:
-        valid = True
+    """Takes a piece of text and returns all the IP addresses it finds in the 
+    text.
+
+    Args:
+        text (string): The input string in which we search for SSNs
+
+    Returns:
+        list: A list of SSNs extracted from the input text
+    """
+    ips = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', text)
+    for ip in ips:
+        # remove IP-like digits that do not follow the IPv4 standard
+        invalid = False
         for part in ip.split('.'):
             try:
                 if int(part) > 255:
-                    valid = False
-                    # print('Invalid IP: ', ip)
+                    ips.remove(ip)
+                    invalid = True
+                    break
             except:
                 pass
-        if (ip.find('192.168')==0) \
-            or (ip.find('127.0.0')==0) \
-            or (ip.find('8.8.8.8')==0) \
-            or (ip.find('0.0.0.0')==0):
-            valid = False
-        if valid:
-            prev_indx = text.find(ip)-1
-            next_indx = text.find(ip)+10
-            if prev_indx >= 0:
-                if text[prev_indx].isdigit() or text[prev_indx] == '/':
-                    continue
-            if next_indx < len(text):
-                if text[next_indx].isdigit() or text[next_indx] == '/':
-                    continue
-            ips.append(ip)
+        if invalid:
+            continue
+        # remove typical non-sensitive IP addresses
+        if (ip.find('192.168') == 0) \
+            or (ip.find('127.0.0') == 0) \
+            or (ip.find('8.8.8.8') == 0) \
+            or (ip.find('0.0.0.0') == 0):
+            ips.remove(ip)
+            continue
+        # remove IP-like digits that are part of a longer string of digits
+        prev_indx = text.find(ip) - 1
+        next_indx = text.find(ip) + 10
+        if prev_indx >= 0:
+            # remove IP-like digits that are part of a URL
+            if text[prev_indx].isdigit() or text[prev_indx] == '/':
+                ips.remove(ip)
+                continue
+        if prev_indx > 0:
+            # remove IP-like digits that are part of a longer struct
+            if text[prev_indx - 1].isdigit() and text[prev_indx] == '.':
+                ips.remove(ip)
+                continue
+        if next_indx < len(text):
+            # remove IP-like digits that are part of a URL
+            if text[next_indx].isdigit() or text[next_indx] == '/':
+                ips.remove(ip)
+                continue
+        if next_indx < len(text) - 1:
+            # remove IP-like digits that are part of a longer struct
+            if text[next_indx].isdigit() and text[next_indx] == '.':
+                ips.remove(ip)
+                continue
     return ips
 
 def has_ip_kws(text):
