@@ -4,7 +4,7 @@ __description__ = "This file contains functions for extracting Personally Identi
 
 import re
 
-def extract_ssns(text):
+def extract_ssns(text, verbose=None):
     """Takes a piece of text and returns all the social security numbers (SSNs) 
     it finds in the text.
 
@@ -45,12 +45,11 @@ def extract_ssns(text):
     for ssn in ssns:
         if ssn in invalid_looking_ssns:
             ssns.remove(ssn)
-            if ssn == '078-05-1120':
-                print('>>> woolworth ssn')
-            elif ssn.find('420-69-') == 0:
-                print('>>> Unknown SSN that starts with 420-69:  ', ssn)
-            # else:
-            #     print('Invalid_ssns: ', ssn)
+            if verbose:
+                if ssn == '078-05-1120':
+                    print('>>> woolworth ssn')
+                elif ssn.find('420-69-') == 0:
+                    print('>>> Unknown SSN that starts with 420-69:  ', ssn)
             continue
         prev_indx = text.find(ssn)-1
         next_indx = text.find(ssn)+11
@@ -120,3 +119,10 @@ def has_ip(text):
     if len(extract_ips(text)) == 0:
         return False
     return has_ip_kws(text)
+
+def has_phone(text):
+    phones = re.findall(r'(\d{3}[-\s]??\d{3}[-\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4})', text)
+    for phone in phones:
+        if (phone.find(' ') > 0) or (phone.find('-') > 0):
+            return True
+    return False
