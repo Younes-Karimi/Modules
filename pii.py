@@ -101,7 +101,7 @@ def extract_ips(text):
         invalid = False
         for part in ip.split('.'):
             try:
-                if int(part) > 255:
+                if int(part) > 255 or part.startswith('0'):
                     ips.remove(ip)
                     # replace the first instance of an invalid IP with void for 
                     # cases where there are multiple instances of an invalid IP 
@@ -140,7 +140,10 @@ def extract_ips(text):
                 continue
         if next_indx < len(text):
             # remove IP-like digits that are part of a URL
-            if text[next_indx].isdigit() or text[next_indx] == '/':
+            if text[next_indx].isdigit() \
+                or text[next_indx] == '/' \
+                or text[next_indx] == ':' \
+                or text[next_indx] == '-':
                 ips.remove(ip)
                 text = text.replace(ip, ' ')
                 continue
