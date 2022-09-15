@@ -128,7 +128,10 @@ def extract_ips(text):
         next_indx = text.find(ip) + len(ip)
         if prev_indx >= 0:
             # remove IP-like digits that are part of a URL
-            if text[prev_indx].isdigit() or text[prev_indx] == '/':
+            if text[prev_indx].isdigit() \
+                or text[prev_indx] == '/' \
+                or text[prev_indx] == ':' \
+                or text[prev_indx] == '-':
                 ips.remove(ip)
                 text = text.replace(ip, ' ')
                 continue
