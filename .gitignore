@@ -1,8 +1,2 @@
 .DS_Store
-glove.py
-machine_learning.py
-ar_clean_text.py
-get_user_timeline.py
-get_users.py
-sentiment.py
-stylometric_features.py
+local/
