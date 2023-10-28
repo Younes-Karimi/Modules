@@ -1,0 +1,36 @@
+{
+    "punctuation": 
+        {
+            "dot": ".",
+            "colon": ":", 
+            "semicolon": ";",
+            "comma": ",",
+            "single-quote": "'",
+            "double-quote": "\"",
+            "question-mark": "?",
+            "exclamation-mark": "!"
+        },
+    "special-characters": 
+        {
+            "percent-mark": "%",
+            "ampersand": "&",
+            "dollar-sign": "$",
+            "at-sign": "@",
+            "asterisk": "*",
+            "back-slash": "\\",
+            "inverse-question-mark": "¿",
+            "inverse-exclamation-mark": "¡",
+            "hash-sign": "#",
+            "slash": "/",
+            "dash": "-"
+        },
+    "parenthesis": 
+        {
+            "left-round-bracket": "(",
+            "right-round-bracket": ")",
+            "left-square-bracket": "[",
+            "right-square-bracket": "]",
+            "left-curly-bracket": "{",
+            "right-curly-bracket": "}"
+        }
+}
