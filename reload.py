@@ -12,5 +12,9 @@ def reload_modules(modules_path):
     modules = git.Repo(modules_path)
     modules.remotes.origin.pull()
     if modules.is_dirty(untracked_files=True):
-        print('>> Changes detected <<\n')
-        print(modules.git.diff(modules.head.commit.tree))
+        diff = modules.git.diff(modules.head.commit.tree)
+        if len(diff) > 0:
+            print('>> Detected Changes: <<\n')
+            print(diff)
+        else:
+            print('No changes detected')
